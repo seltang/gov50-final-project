@@ -1,6 +1,6 @@
 ---
 title: "Gov 50 Final Project"
-author: "Your Name Here"
+author: "Selina Tang"
 description: "My final project"
 output:
   distill::distill_article:
@@ -11,4 +11,4 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to...
+I am interested in exploring data related to the correlation between mental health and civic participation. It would be interesting to know how the prevalence of mental disorders and accessibility of mental health treatment in a community relates to the community members' levels of civic engagement. Some examples of civic engagement may include participation in local/state/federal voting, competitiveness of elections, protests, town meetings, and more. 
