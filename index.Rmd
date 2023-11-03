@@ -16,6 +16,45 @@ I am interested in exploring data related to the correlation between mental heal
 ## Milestone 2 Proposal
 Do increasingly negative mental health statuses among a community reduce civic engagement? A negative mental health status can include a lack of mental health treatment, high rates of mental illnesses, general unhappiness, how concerned one is with climate change, and more. When a person is feeling unhappy, anxious, or frustrated, they are less concerned about the community and the long term future as they are preoccupied with negative personal thoughts. Hence, they are less likely to be civically engaged and partake in activities such as voting, protesting, and more. I hypothesize that the general happiness levels of individuals are contagious in a community, resulting in a pattern of changed civic participation. My data comes from the European Social Survey round 10 data from 2020. I am still deciding on which explanatory variables to use as I am interested in the variables: stflife (how satisfied with life as a whole), stfhlth (state of health services), happy (how happy are you), and hlthhmp (hampered in daily activities due to mental problem). Most of these variables are on a scale of 1-10, thus we can calculate the center distribution of these numbers based on country to create categories. My outcome variables of interest are polintr(how interested in politics), vote (voted in last national election), sgnptit (signed petition in last 12 months), and more. There are quite a few relevant variables that showcase one's civic engagement. Polintr is measured on a scale of 1-4, whereas vote and sgnptit are binary with 1 meaning yes and 2 meaning no. If I am able to observe that less people are interested in politics or less likely to vote/sign petitions in countries where general happiness and mental is lower, I will be able to support my hypothesis. There should be a positive, direct correlation between these variables. 
 
+##Milestone 3
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+civic_mh <- read.csv("ESS10.csv")
+
+proportion <- civic_mh |>
+  drop_na(polintr) |>
+  mutate(polintr_group = case_when(
+    polintr == 1 ~ "Very Interested",
+    polintr == 2 ~ "Quite Interested",
+    polintr == 3 ~ "Hardly Interested",
+    polintr == 4 ~ "Not Interested"), 
+    hamper_group = case_when(
+    hlthhmp == 1 ~ "Extreme",
+    hlthhmp == 2 ~ "Somewhat",
+    hlthhmp == 3 ~ "No")) |> 
+  group_by(hamper_group, polintr_group) |>
+  summarize(n = n()) |>
+  mutate(prop = n / sum(n))
+
+plot <- proportion |>
+  ggplot(aes(x = hamper_group, y = prop, fill = polintr_group)) + 
+  geom_col(position = "dodge") + 
+  labs(x = "Level of effect on daily life by mental health", y = "Proportion")
+
+plot
+  
+```
+
+
+
+
+
+
+
+
 
 
 
