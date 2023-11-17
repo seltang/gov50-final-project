@@ -1521,7 +1521,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <p>I am interested in exploring data related to the correlation between mental health and civic participation. It would be interesting to know how the prevalence of mental disorders and accessibility of mental health treatment in a community relates to the community members’ levels of civic engagement. Some examples of civic engagement may include participation in local/state/federal voting, competitiveness of elections, protests, town meetings, and more. There have been many data scientists that look at the relationship between race, age, profession, income, and more with civic participation. There appears to be less research, however, for those with mental disorders.</p>
 <h2 id="milestone-2-proposal">Milestone 2 Proposal</h2>
 <p>Do increasingly negative mental health statuses among a community reduce civic engagement? A negative mental health status can include a lack of mental health treatment, high rates of mental illnesses, general unhappiness, how concerned one is with climate change, and more. When a person is feeling unhappy, anxious, or frustrated, they are less concerned about the community and the long term future as they are preoccupied with negative personal thoughts. Hence, they are less likely to be civically engaged and partake in activities such as voting, protesting, and more. I hypothesize that the general happiness levels of individuals are contagious in a community, resulting in a pattern of changed civic participation. My data comes from the European Social Survey round 10 data from 2020. I am still deciding on which explanatory variables to use as I am interested in the variables: stflife (how satisfied with life as a whole), stfhlth (state of health services), happy (how happy are you), and hlthhmp (hampered in daily activities due to mental problem). Most of these variables are on a scale of 1-10, thus we can calculate the center distribution of these numbers based on country to create categories. My outcome variables of interest are polintr(how interested in politics), vote (voted in last national election), sgnptit (signed petition in last 12 months), and more. There are quite a few relevant variables that showcase one’s civic engagement. Polintr is measured on a scale of 1-4, whereas vote and sgnptit are binary with 1 meaning yes and 2 meaning no. If I am able to observe that less people are interested in politics or less likely to vote/sign petitions in countries where general happiness and mental is lower, I will be able to support my hypothesis. There should be a positive, direct correlation between these variables.</p>
-<p>##Milestone 3</p>
+<p>##Milestone 3 Graph</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
@@ -1542,7 +1542,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span>    <span class='va'>hlthhmp</span> <span class='op'>==</span> <span class='fl'>3</span> <span class='op'>~</span> <span class='st'>"No"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span> </span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>hamper_group</span>, <span class='va'>polintr_group</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
-<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>prop <span class='op'>=</span> <span class='va'>n</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span><span class='op'>)</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>prop <span class='op'>=</span> <span class='va'>n</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='op'>(</span><span class='va'>proportion</span><span class='op'>)</span></span>
 <span></span>
 <span><span class='va'>plot</span> <span class='op'>&lt;-</span> <span class='va'>proportion</span> <span class='op'>|&gt;</span></span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>hamper_group</span>, y <span class='op'>=</span> <span class='va'>prop</span>, fill <span class='op'>=</span> <span class='va'>polintr_group</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> </span>
@@ -1553,7 +1554,25 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p><img src="index_files/figure-html5/unnamed-chunk-1-1.png" width="624" /></p>
 </div>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<h2 id="milestone-4-visualization">Milestone 4 Visualization</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>visual</span> <span class='op'>&lt;-</span> <span class='va'>proportion</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>n</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>hamper_group</span>, values_from <span class='op'>=</span> <span class='va'>prop</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>visual</span></span></code></pre>
+</div>
+<pre><code># A tibble: 4 × 4
+  polintr_group     Extreme     No Somewhat
+  &lt;chr&gt;               &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+1 Hardly Interested   0.295 0.359    0.364 
+2 Not Interested      0.272 0.240    0.209 
+3 Quite Interested    0.326 0.310    0.330 
+4 Very Interested     0.106 0.0892   0.0947</code></pre>
+</div>
+<p>A larger portion of individuals whose daily lives are extremely affected by their mental health are quite or very interested in politics compared to the group of individuals who are not affected by their mental health. Conversely, a smaller proportion of the extremely affected group reported being hardly interested than both the group whose daily lives were not affected and only somewhat affected by mental health concerns. It appears that those with mental health difficulties are more likely to be on the extremes. This may be because they believe politics either is able to or totally unable to address greater social and political issues that are affecting their mental healths.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
