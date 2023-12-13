@@ -9,14 +9,18 @@ output:
 
 
 
-## Project thoughts
+## Introduction
 
-I am interested in exploring data related to the correlation between mental health and civic participation. It would be interesting to know how the prevalence of mental disorders and accessibility of mental health treatment in a community relates to the community members' levels of civic engagement. Some examples of civic engagement may include participation in local/state/federal voting, competitiveness of elections, protests, town meetings, and more. There have been many data scientists that look at the relationship between race, age, profession, income, and more with civic participation. There appears to be less research, however, for those with mental disorders. 
+I explore data related to the correlation between mental health and civic participation. It would be interesting to know how the prevalence of mental disorders and accessibility of mental health treatment in a community relates to the community members' levels of civic engagement. Some examples of civic engagement may include participation in local/state/federal voting, competitiveness of elections, protests, town meetings, and more. There have been many data scientists that look at the relationship between race, age, profession, income, and more with civic participation. There appears to be less research, however, for those with mental disorders. 
 
-## Milestone 2 Proposal
-Do increasingly negative mental health statuses among a community reduce civic engagement? A negative mental health status can include a lack of mental health treatment, high rates of mental illnesses, general unhappiness, how concerned one is with climate change, and more. When a person is feeling unhappy, anxious, or frustrated, they are less concerned about the community and the long term future as they are preoccupied with negative personal thoughts. Hence, they are less likely to be civically engaged and partake in activities such as voting, protesting, and more. I hypothesize that the general happiness levels of individuals are contagious in a community, resulting in a pattern of changed civic participation. My data comes from the European Social Survey round 10 data from 2020. I am still deciding on which explanatory variables to use as I am interested in the variables: stflife (how satisfied with life as a whole), stfhlth (state of health services), happy (how happy are you), and hlthhmp (hampered in daily activities due to mental problem). Most of these variables are on a scale of 1-10, thus we can calculate the center distribution of these numbers based on country to create categories. My outcome variables of interest are polintr(how interested in politics), vote (voted in last national election), sgnptit (signed petition in last 12 months), and more. There are quite a few relevant variables that showcase one's civic engagement. Polintr is measured on a scale of 1-4, whereas vote and sgnptit are binary with 1 meaning yes and 2 meaning no. If I am able to observe that less people are interested in politics or less likely to vote/sign petitions in countries where general happiness and mental is lower, I will be able to support my hypothesis. There should be a positive, direct correlation between these variables. 
+My main research question is whether negative mental health decreases civic engagement because they are disenfranchised. A negative mental health status can include a lack of mental health treatment, high rates of mental illnesses, general unhappiness, how concerned one is with climate change, and more. When a person is feeling unhappy, anxious, or frustrated, they are less concerned about the community and the long term future as they are preoccupied with negative personal thoughts. Hence, they are less likely to be civically engaged and partake in activities such as voting, protesting, and more. I hypothesize that the general happiness levels of individuals are contagious in a community, resulting in a pattern of changed civic participation. 
 
-##Milestone 3 Graph
+
+## Data Section
+
+My data comes from the European Social Survey round 10 data from 2020. I am using the variable hlthhmp (hampered in daily activities due to mental problem) as my independent variable. The data is on a scale of 1-10, thus we can calculate the center distribution of these numbers based on country to create categories. My outcome variable is polintr(how interested in politics). Polintr is measured on a scale of 1-4. If I am able to observe that less people are interested in politics where general happiness and mental is lower, I will be able to support my hypothesis. There should be a positive, direct correlation between these variables. My research design is cross-sectional. 
+
+## Results
 
 ```{r}
 library(tidyverse)
@@ -38,31 +42,32 @@ proportion <- civic_mh |>
   group_by(hamper_group, polintr_group) |>
   summarize(n = n()) |>
   mutate(prop = n / sum(n)) |>
-  na.omit(proportion)
+  na.omit(proportion) 
 
 plot <- proportion |>
   ggplot(aes(x = hamper_group, y = prop, fill = polintr_group)) + 
   geom_col(position = "dodge") + 
-  labs(x = "Level of effect on daily life by mental health", y = "Proportion")
+  labs(x = "Level of effect on daily life by mental health", y = "Proportion") 
 
 plot
 ```
 
-
-## Milestone 4 Visualization
+For this regression analysis, I calculated the proportion of interest in politics within the different groups whose daily lives are affected at various levels by mental health. The proportions will vary if certain groups are more invested in politics and civic engagement. It is interesting to note that the relative levels of interest are consistent across the extremely, not, and somewhat affected groups. In general the amount of interest is approximately the same as well. Most people in all three groups are hardly interested. However, for the extremely affected group, more people are quite interested than hardly interested. It is also interesting to note that most people are in the middle two groups (hardly interested and quite interested) and do not take extreme positions. Very interested in politics is the least common. 
 
 ```{r}
 visual <- proportion |>
   select(-n) |>
-  pivot_wider(names_from = hamper_group, values_from = prop)
+  pivot_wider(names_from = polintr_group, values_from = prop) 
 
-visual
+knitr::kable(visual, digits = 2)
 ```
 
 
-A larger portion of individuals whose daily lives are extremely affected by their mental health are quite or very interested in politics compared to the group of individuals who are not affected by their mental health. Conversely, a smaller proportion of the extremely affected group reported being hardly interested than both the group whose daily lives were not affected and only somewhat affected by mental health concerns. It appears that those with mental health difficulties are more likely to be on the extremes. This may be because they believe politics either is able to or totally unable to address greater social and political issues that are affecting their mental healths.
+A larger portion of individuals whose daily lives are extremely affected by their mental health are quite or very interested in politics compared to the group of individuals who are not affected by their mental health. Conversely, a smaller proportion of the extremely affected group reported being hardly interested than both the group whose daily lives were not affected and only somewhat affected by mental health concerns. It appears that those with mental health difficulties are more likely to be on the extremes. This may be because they believe politics either is able to or totally unable to address greater social and political issues that are affecting their mental healths. In general, the numbers vary at most by 0.06, which is between the extremely and not affected groups in terms of being hardly interested. Most coefficients are approximately .02-.04 away from each other. These numbers are not statistically significant and thus these two variables should not be interpreted causally. 
 
+## Conclusion
 
+The coefficients between the proportions are not statistically different, which mean that my project does not prove correlation nor causation between one's life being affected by mental health and their interest in politics. My hypothesis is not supported by my results. Some limitations on my project are that I was only able to evaluate one variable for the independent and outcome variables. However, these two variables cannot fully represent my concepts because there are more ways to measure the effect of mental health. The current hamper variable is so broad. On the other hand, there are various confounding variables. For instance, there might be different levels of poverty, access to treatment, and identity markers that affect one's mental health and how an illness would affect them. Community engagement, wealth, and geographical region can also change one's interest in politics. Hence, I would conduct an analysis with more variables in order to account for those differences. I would also seek more data across different years because my current data set is only from 1 year. 
 
 
 

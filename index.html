@@ -227,9 +227,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     display: none !important;
   }
 
+  hr.section-separator {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0px;
+  }
+
+
+  d-byline {
+    border-top: none;
+  }
+
   d-article {
     padding-top: 2.5rem;
     padding-bottom: 30px;
+    border-top: none;
   }
 
   d-appendix {
@@ -324,6 +336,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article div.sourceCode pre {
     padding-left: 18px;
     font-size: 14px;
+  }
+
+  /* tweak for Pandoc numbered line within distill */
+  d-article pre.numberSource code > span {
+      left: -2em;
   }
 
   d-article pre {
@@ -1085,6 +1102,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // create d-title
     $('.d-title').changeElementType('d-title');
 
+    // separator
+    var separator = '<hr class="section-separator" style="clear: both"/>';
+    // prepend separator above appendix
+    $('.d-byline').before(separator);
+    $('.d-article').before(separator);
+
     // create d-byline
     var byline = $('<d-byline></d-byline>');
     $('.d-byline').replaceWith(byline);
@@ -1162,8 +1185,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     $('.distill-force-highlighting-css').parent().remove();
 
     // remove empty line numbers inserted by pandoc when using a
-    // custom syntax highlighting theme
-    $('code.sourceCode a:empty').remove();
+    // custom syntax highlighting theme, except when numbering line
+    // in code chunk
+    $('pre:not(.numberLines) code.sourceCode a:empty').remove();
 
     // load distill framework
     load_distill_framework();
@@ -1189,12 +1213,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
       // add orcid ids
       $('.authors-affiliations').find('.author').each(function(i, el) {
         var orcid_id = front_matter.authors[i].orcidID;
+        var author_name = front_matter.authors[i].author
         if (orcid_id) {
           var a = $('<a></a>');
           a.attr('href', 'https://orcid.org/' + orcid_id);
           var img = $('<img></img>');
           img.addClass('orcid-id');
-          img.attr('alt', 'ORCID ID');
+          img.attr('alt', author_name ? 'ORCID ID for ' + author_name : 'ORCID ID');
           img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
           a.append(img);
           $(this).append(a);
@@ -1472,7 +1497,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="index_files/header-attrs-2.24/header-attrs.js"></script>
+  <script src="index_files/header-attrs-2.25/header-attrs.js"></script>
   <script src="index_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
   <script src="index_files/popper-2.6.0/popper.min.js"></script>
   <link href="index_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
@@ -1504,6 +1529,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 <div class="d-title">
 <h1>Gov 50 Final Project</h1>
+
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 <p>My final project</p>
@@ -1517,11 +1543,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 
 <div class="d-article">
-<h2 id="project-thoughts">Project thoughts</h2>
-<p>I am interested in exploring data related to the correlation between mental health and civic participation. It would be interesting to know how the prevalence of mental disorders and accessibility of mental health treatment in a community relates to the community members’ levels of civic engagement. Some examples of civic engagement may include participation in local/state/federal voting, competitiveness of elections, protests, town meetings, and more. There have been many data scientists that look at the relationship between race, age, profession, income, and more with civic participation. There appears to be less research, however, for those with mental disorders.</p>
-<h2 id="milestone-2-proposal">Milestone 2 Proposal</h2>
-<p>Do increasingly negative mental health statuses among a community reduce civic engagement? A negative mental health status can include a lack of mental health treatment, high rates of mental illnesses, general unhappiness, how concerned one is with climate change, and more. When a person is feeling unhappy, anxious, or frustrated, they are less concerned about the community and the long term future as they are preoccupied with negative personal thoughts. Hence, they are less likely to be civically engaged and partake in activities such as voting, protesting, and more. I hypothesize that the general happiness levels of individuals are contagious in a community, resulting in a pattern of changed civic participation. My data comes from the European Social Survey round 10 data from 2020. I am still deciding on which explanatory variables to use as I am interested in the variables: stflife (how satisfied with life as a whole), stfhlth (state of health services), happy (how happy are you), and hlthhmp (hampered in daily activities due to mental problem). Most of these variables are on a scale of 1-10, thus we can calculate the center distribution of these numbers based on country to create categories. My outcome variables of interest are polintr(how interested in politics), vote (voted in last national election), sgnptit (signed petition in last 12 months), and more. There are quite a few relevant variables that showcase one’s civic engagement. Polintr is measured on a scale of 1-4, whereas vote and sgnptit are binary with 1 meaning yes and 2 meaning no. If I am able to observe that less people are interested in politics or less likely to vote/sign petitions in countries where general happiness and mental is lower, I will be able to support my hypothesis. There should be a positive, direct correlation between these variables.</p>
-<p>##Milestone 3 Graph</p>
+<h2 id="introduction">Introduction</h2>
+<p>I explore data related to the correlation between mental health and civic participation. It would be interesting to know how the prevalence of mental disorders and accessibility of mental health treatment in a community relates to the community members’ levels of civic engagement. Some examples of civic engagement may include participation in local/state/federal voting, competitiveness of elections, protests, town meetings, and more. There have been many data scientists that look at the relationship between race, age, profession, income, and more with civic participation. There appears to be less research, however, for those with mental disorders.</p>
+<p>My main research question is whether negative mental health decreases civic engagement because they are disenfranchised. A negative mental health status can include a lack of mental health treatment, high rates of mental illnesses, general unhappiness, how concerned one is with climate change, and more. When a person is feeling unhappy, anxious, or frustrated, they are less concerned about the community and the long term future as they are preoccupied with negative personal thoughts. Hence, they are less likely to be civically engaged and partake in activities such as voting, protesting, and more. I hypothesize that the general happiness levels of individuals are contagious in a community, resulting in a pattern of changed civic participation.</p>
+<h2 id="data-section">Data Section</h2>
+<p>My data comes from the European Social Survey round 10 data from 2020. I am using the variable hlthhmp (hampered in daily activities due to mental problem) as my independent variable. The data is on a scale of 1-10, thus we can calculate the center distribution of these numbers based on country to create categories. My outcome variable is polintr(how interested in politics). Polintr is measured on a scale of 1-4. If I am able to observe that less people are interested in politics where general happiness and mental is lower, I will be able to support my hypothesis. There should be a positive, direct correlation between these variables. My research design is cross-sectional.</p>
+<h2 id="results">Results</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
@@ -1543,36 +1570,72 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='op'>(</span><span class='va'>hamper_group</span>, <span class='va'>polintr_group</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarize</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>prop <span class='op'>=</span> <span class='va'>n</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>n</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
-<span>  <span class='fu'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='op'>(</span><span class='va'>proportion</span><span class='op'>)</span></span>
+<span>  <span class='fu'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='op'>(</span><span class='va'>proportion</span><span class='op'>)</span> </span>
 <span></span>
 <span><span class='va'>plot</span> <span class='op'>&lt;-</span> <span class='va'>proportion</span> <span class='op'>|&gt;</span></span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>hamper_group</span>, y <span class='op'>=</span> <span class='va'>prop</span>, fill <span class='op'>=</span> <span class='va'>polintr_group</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span> </span>
 <span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='op'>(</span>position <span class='op'>=</span> <span class='st'>"dodge"</span><span class='op'>)</span> <span class='op'>+</span> </span>
-<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Level of effect on daily life by mental health"</span>, y <span class='op'>=</span> <span class='st'>"Proportion"</span><span class='op'>)</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='st'>"Level of effect on daily life by mental health"</span>, y <span class='op'>=</span> <span class='st'>"Proportion"</span><span class='op'>)</span> </span>
 <span></span>
 <span><span class='va'>plot</span></span></code></pre>
 </div>
 <p><img src="index_files/figure-html5/unnamed-chunk-1-1.png" width="624" /></p>
 </div>
-<h2 id="milestone-4-visualization">Milestone 4 Visualization</h2>
+<p>For this regression analysis, I calculated the proportion of interest in politics within the different groups whose daily lives are affected at various levels by mental health. The proportions will vary if certain groups are more invested in politics and civic engagement. It is interesting to note that the relative levels of interest are consistent across the extremely, not, and somewhat affected groups. In general the amount of interest is approximately the same as well. Most people in all three groups are hardly interested. However, for the extremely affected group, more people are quite interested than hardly interested. It is also interesting to note that most people are in the middle two groups (hardly interested and quite interested) and do not take extreme positions. Very interested in politics is the least common.</p>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>visual</span> <span class='op'>&lt;-</span> <span class='va'>proportion</span> <span class='op'>|&gt;</span></span>
 <span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='op'>-</span><span class='va'>n</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
-<span>  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>hamper_group</span>, values_from <span class='op'>=</span> <span class='va'>prop</span><span class='op'>)</span></span>
+<span>  <span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>polintr_group</span>, values_from <span class='op'>=</span> <span class='va'>prop</span><span class='op'>)</span> </span>
 <span></span>
-<span><span class='va'>visual</span></span></code></pre>
+<span><span class='fu'>knitr</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/kable.html'>kable</a></span><span class='op'>(</span><span class='va'>visual</span>, digits <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span></span></code></pre>
 </div>
-<pre><code># A tibble: 4 × 4
-  polintr_group     Extreme     No Somewhat
-  &lt;chr&gt;               &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
-1 Hardly Interested   0.295 0.359    0.364 
-2 Not Interested      0.272 0.240    0.209 
-3 Quite Interested    0.326 0.310    0.330 
-4 Very Interested     0.106 0.0892   0.0947</code></pre>
+<table>
+<colgroup>
+<col style="width: 16%" />
+<col style="width: 22%" />
+<col style="width: 18%" />
+<col style="width: 21%" />
+<col style="width: 20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">hamper_group</th>
+<th style="text-align: right;">Hardly Interested</th>
+<th style="text-align: right;">Not Interested</th>
+<th style="text-align: right;">Quite Interested</th>
+<th style="text-align: right;">Very Interested</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Extreme</td>
+<td style="text-align: right;">0.30</td>
+<td style="text-align: right;">0.27</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.11</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">No</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">0.24</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Somewhat</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">0.09</td>
+</tr>
+</tbody>
+</table>
 </div>
-<p>A larger portion of individuals whose daily lives are extremely affected by their mental health are quite or very interested in politics compared to the group of individuals who are not affected by their mental health. Conversely, a smaller proportion of the extremely affected group reported being hardly interested than both the group whose daily lives were not affected and only somewhat affected by mental health concerns. It appears that those with mental health difficulties are more likely to be on the extremes. This may be because they believe politics either is able to or totally unable to address greater social and political issues that are affecting their mental healths.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p>A larger portion of individuals whose daily lives are extremely affected by their mental health are quite or very interested in politics compared to the group of individuals who are not affected by their mental health. Conversely, a smaller proportion of the extremely affected group reported being hardly interested than both the group whose daily lives were not affected and only somewhat affected by mental health concerns. It appears that those with mental health difficulties are more likely to be on the extremes. This may be because they believe politics either is able to or totally unable to address greater social and political issues that are affecting their mental healths. In general, the numbers vary at most by 0.06, which is between the extremely and not affected groups in terms of being hardly interested. Most coefficients are approximately .02-.04 away from each other. These numbers are not statistically significant and thus these two variables should not be interpreted causally.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>The coefficients between the proportions are not statistically different, which mean that my project does not prove correlation nor causation between one’s life being affected by mental health and their interest in politics. My hypothesis is not supported by my results. Some limitations on my project are that I was only able to evaluate one variable for the independent and outcome variables. However, these two variables cannot fully represent my concepts because there are more ways to measure the effect of mental health. The current hamper variable is so broad. On the other hand, there are various confounding variables. For instance, there might be different levels of poverty, access to treatment, and identity markers that affect one’s mental health and how an illness would affect them. Community engagement, wealth, and geographical region can also change one’s interest in politics. Hence, I would conduct an analysis with more variables in order to account for those differences. I would also seek more data across different years because my current data set is only from 1 year.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
