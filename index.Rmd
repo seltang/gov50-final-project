@@ -65,6 +65,16 @@ knitr::kable(visual, digits = 2)
 
 A larger portion of individuals whose daily lives are extremely affected by their mental health are quite or very interested in politics compared to the group of individuals who are not affected by their mental health. Conversely, a smaller proportion of the extremely affected group reported being hardly interested than both the group whose daily lives were not affected and only somewhat affected by mental health concerns. It appears that those with mental health difficulties are more likely to be on the extremes. This may be because they believe politics either is able to or totally unable to address greater social and political issues that are affecting their mental healths. In general, the numbers vary at most by 0.06, which is between the extremely and not affected groups in terms of being hardly interested. Most coefficients are approximately .02-.04 away from each other. These numbers are not statistically significant and thus these two variables should not be interpreted causally. 
 
+```{r}
+reg <- lm(polintr ~ hlthhmp, data = civic_mh)
+
+coef(reg, fmt = fmt_decimal(digits = 2))
+
+modelsummary::modelsummary(reg)
+```
+The linear regression model shows the same result as the previous table. With a coefficient of 0.037, it means that a 1 unit decrease in severity of one's mental health issues is associated with a 0.037 unit decrease in political interest. This number is statistically insignificant and demonstrates that there is no strong correlation between the two variables. 
+
+
 ## Conclusion
 
 The coefficients between the proportions are not statistically different, which mean that my project does not prove correlation nor causation between one's life being affected by mental health and their interest in politics. My hypothesis is not supported by my results. Some limitations on my project are that I was only able to evaluate one variable for the independent and outcome variables. However, these two variables cannot fully represent my concepts because there are more ways to measure the effect of mental health. The current hamper variable is so broad. On the other hand, there are various confounding variables. For instance, there might be different levels of poverty, access to treatment, and identity markers that affect one's mental health and how an illness would affect them. Community engagement, wealth, and geographical region can also change one's interest in politics. Hence, I would conduct an analysis with more variables in order to account for those differences. I would also seek more data across different years because my current data set is only from 1 year. 
